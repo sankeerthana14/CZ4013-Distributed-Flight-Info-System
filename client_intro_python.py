@@ -2,16 +2,29 @@
 
 #Import
 import socket
+import sys
 
 UDP_IP_ADDRESS = "127.0.0.1"
 UDP_PORT_NUM = 6789
 
+"""
 # TEST: CHOOSE ONE
-client_message = "query_flight_details,2"
-client_message = "query_flight,Italy,Australia"
-client_message = "reserve_seats,2,3"
-client_message = "query_flight_from_source,Italy"
-client_message = "add_delay,2,5"
+#client_message = "query_flight_details,9"
+#client_message = "query_flight,France,Brazil"
+client_message = "reserve_seats,2,2"
+#client_message = "query_flight_from_source,Italy"
+#client_message = "add_delay,2,5"
+#client_message = "monitor_interval,1,2"
+"""
+
+# get client_message from command line
+# Example: python3 client_intro_python.py "query_flight_details,2"
+# Example: python3 client_intro_python.py "query_flight,Italy,Australia"
+# Example: python3 client_intro_python.py "reserve_seats,2,3"
+# Example: python3 client_intro_python.py "query_flight_from_source,Italy"
+# Example: python3 client_intro_python.py "add_delay,2,5"
+
+client_message = sys.argv[1]
 
 encoded_client_message = str.encode(client_message)
 
@@ -25,4 +38,4 @@ UDP_client_socket.sendto(encoded_client_message, (UDP_IP_ADDRESS, UDP_PORT_NUM))
 print("INFO: Receiving message from server...")
 message_from_server = UDP_client_socket.recvfrom(1024)
 
-print(f"Message from Server: {message_from_server}")
+print(f"Message from Server:\n\n{message_from_server[0].decode()}")
