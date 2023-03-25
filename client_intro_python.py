@@ -7,15 +7,6 @@ import sys
 UDP_IP_ADDRESS = "127.0.0.1"
 UDP_PORT_NUM = 6789
 
-
-# get client_message from command line
-# Example: python3 client_intro_python.py "query_flight_details,2"
-# Example: python3 client_intro_python.py "query_flight,Italy,Australia"
-# Example: python3 client_intro_python.py "reserve_seats,2,3"
-# Example: python3 client_intro_python.py "query_flight_from_source,Italy"
-# Example: python3 client_intro_python.py "add_delay,2,5"
-# Example: python3 client_intro_python.py "monitor_interval,1,2"
-
 client_message = sys.argv[1]
 
 encoded_client_message = str.encode(client_message)
