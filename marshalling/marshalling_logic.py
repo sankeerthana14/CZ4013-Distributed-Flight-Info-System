@@ -6,6 +6,8 @@ Going with Binary - all in all there are 95 characters to encode, including whit
 Assuming that all the data is transferred as strings.
 Every binary number will be of 7 digits as the closest numbe rot 94 is 128 = 2^7
 
+useful: https://www.w3resource.com/python/python-bytes.php
+
 """
 #Characters to be mapped
 uppercase_letters = [' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
@@ -59,8 +61,8 @@ encoded_string = marshall(text)
 decoded_string = unmarshall(encoded_string)
 
 print(f"Original String: {text}")
-print(f"Encoded String: {encoded_string}")
-print(f"Decoded String: {decoded_string}")
+print(f"Encoded String: {encoded_string}, type: {type(encoded_string)}")
+print(f"Decoded String: {decoded_string}, type: {decoded_string}")
 
 
 
