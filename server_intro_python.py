@@ -5,6 +5,7 @@ import socket
 import flights_db as FLIGHTS
 import time
 import marshalling.marshalling_logic as MARSHALLING
+from helper_fxns import acknowledge_request
 
 #initialising the IP address, port number and buffer size
 UDP_IP_ADDRESS = "127.0.0.1"
@@ -99,27 +100,33 @@ print("INFO: UDP Server up and listening...")
 #Listen for incoming datagrams
 while True:
     byte_address_pair = UDP_server_socket.recvfrom(1024)
-
     message, address = byte_address_pair[0], byte_address_pair[1]
+    
+    print("START\nReceived message from {}".format(address))
 
-    print("START\nReceived from {}: {}".format(address,message))
+    message = MARSHALLING.unmarshall(message)
 
-    message = MARSHALLING.unmarshall(message).split(",")
+    # send acknowledgement to client
+    ack = acknowledge_request(message)
+    UDP_server_socket.sendto(ack, address)
+    print("Sent acknowledgement to client {}".format(address))
+
+    message = message.split(",")
 
     if message[0] == "query_flight":
-        encoded_server_message = MARSHALLING.marshall(query_flight(message[1], message[2]))
+        encoded_server_message, request_id = MARSHALLING.marshall(query_flight(message[1], message[2]))
     elif message[0] == "query_flight_details":
-        encoded_server_message = MARSHALLING.marshall(query_flight_details(message[1]))
+        encoded_server_message, request_id = MARSHALLING.marshall(query_flight_details(message[1]))
     elif message[0] == "reserve_seats":
-        encoded_server_message = MARSHALLING.marshall(reserve_seats(message[1], message[2]))
+        encoded_server_message, request_id = MARSHALLING.marshall(reserve_seats(message[1], message[2]))
     elif message[0] == "add_delay":
-        encoded_server_message = MARSHALLING.marshall(add_delay(message[1], message[2]))
+        encoded_server_message, request_id = MARSHALLING.marshall(add_delay(message[1], message[2]))
     elif message[0] == "query_flight_from_source":
-        encoded_server_message = MARSHALLING.marshall(query_flight_from_source(message[1]))
+        encoded_server_message, request_id = MARSHALLING.marshall(query_flight_from_source(message[1]))
     elif message[0] == "monitor_interval":
-        encoded_server_message = MARSHALLING.marshall(monitor_interval(message[1], message[2]))
+        encoded_server_message, request_id = MARSHALLING.marshall(monitor_interval(message[1], message[2]))
     else:
-        encoded_server_message = MARSHALLING.marshall("ERROR: Invalid request")
+        encoded_server_message, request_id = MARSHALLING.marshall("ERROR: Invalid request")
 
     #sending a reply to the client
     print("Sending to {}: {}\nEND\n".format(address, encoded_server_message))
