@@ -43,7 +43,7 @@ Function to handle 24 hour time with delays - NEED TO WORK ON THIS!!
 def handle_time(delayed_time):
     # Parse the time string into a datetime object
     t = datetime.strptime(delayed_time, '%I')
-    # Format the datetime object into a 24-hour time string
+    # Format the datetime object into a 24-hour time string2
     return t.strftime('%H')
 
         

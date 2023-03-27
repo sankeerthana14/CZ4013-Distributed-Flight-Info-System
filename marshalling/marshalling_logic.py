@@ -39,30 +39,26 @@ with open('/Users/sankeerthana/Documents/NTU/YEAR_4/SEM_2/CZ4013/CZ4013-Distribu
 """    
 
 #Function to encode
-def marshall(string):
-    encoded = ''
-    for letter in string:
-        encoded += mapping[letter]
+def marshall(input):
+    input = str(input)
+    print("Marshalling: ", input)
+    encoded = b''
+    for c in input:
+        encoded += bytes(mapping[c], 'utf-8')
+    print("Marshalled: ", encoded)
     return encoded
 
 #Function to decode
-def unmarshall(string):
+def unmarshall(bytes_string):
+    print("Unmarshalling: ", bytes_string)
+    string = str(bytes_string, 'utf-8')
     decoded = ''
     for i in range(0, len(string), 7):
         term = string[i:i+7]
         idx = list(mapping.values()).index(term)
         decoded += list(mapping.keys())[idx]
+    print("Unmarshalled: ", decoded)
     return decoded
-    
-#Testing it out
-text = "Flight is delayed by 2 hours!"
-
-encoded_string = marshall(text)
-decoded_string = unmarshall(encoded_string)
-
-print(f"Original String: {text}")
-print(f"Encoded String: {encoded_string}, type: {type(encoded_string)}")
-print(f"Decoded String: {decoded_string}, type: {decoded_string}")
 
 
 

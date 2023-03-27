@@ -3,8 +3,8 @@
 #Imports
 import socket
 import flights_db as FLIGHTS
-import helper_fxns as HELPER_FXNS
 import time
+import marshalling.marshalling_logic as MARSHALLING
 
 #initialising the IP address, port number and buffer size
 UDP_IP_ADDRESS = "127.0.0.1"
@@ -22,6 +22,7 @@ def query_flight(source, destination):
 
 # query the departure time, airfare and seatavailability by specifying the flight identifier, else error
 def query_flight_details(flight_id):
+    flight_id = int(flight_id)
     print(f"INFO: Querying flight details for flight {flight_id}...")
     if flight_id in FLIGHTS.flights:
         return FLIGHTS.flights[flight_id]
@@ -31,10 +32,12 @@ def query_flight_details(flight_id):
 # reserve seats for a flight by specifying the flight identifier and number of seats to reserve, else error
 def reserve_seats(flight_id, seats):
     print(f"INFO: Reserving {seats} seats for flight {flight_id}...")
+    flight_id = int(flight_id)
+    seats = int(seats)
     if flight_id in FLIGHTS.flights:
         if FLIGHTS.flights[flight_id]["seats_available"] >= seats:
             FLIGHTS.flights[flight_id]["seats_available"] -= seats
-            print(f"INFO: Seats available for flight {flight_id}: {FLIGHTS.flights[flight_id]['seats_available']}")
+            print(f"INFO: Seats remaining for flight {flight_id}: {FLIGHTS.flights[flight_id]['seats_available']}")
             return f"{seats} Seats successfully reserved for Flight {flight_id}!"
         else:
             return "ERROR: Not enough seats available"
@@ -43,6 +46,8 @@ def reserve_seats(flight_id, seats):
     
 #announcing delay of departure of flight
 def add_delay(flight_id, delay):
+    flight_id = int(flight_id)
+    delay = int(delay)
     print(f"INFO: Adding {delay} hours delay to flight {flight_id}...")
     if flight_id in FLIGHTS.flights:
         FLIGHTS.flights[flight_id]["departure_time"]["hour"] += delay
@@ -54,11 +59,11 @@ def add_delay(flight_id, delay):
 
 def query_flight_from_source(source):
     print(f"INFO: Querying flights from {source}...")
-    flight_id = []
+    flight_ids = []
     for flight in FLIGHTS.flights:
         if FLIGHTS.flights[flight]["source"] == source:
-            flight_id.append(flight)
-    return flight_id
+            flight_ids.append(flight)
+    return flight_ids
 
 #track the seat availability
 def monitor_interval(interval, flight_id):
@@ -82,11 +87,6 @@ def monitor_interval(interval, flight_id):
 
     return f"INFO: Final Seat Availability: {current_seats}"
 
-#data to send to client
-server_message = "Hello UDP Client!"
-
-#encoded data to send to the client
-encoded_server_message = str.encode(server_message)
 
 #Create a datagram socket
 UDP_server_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -102,23 +102,25 @@ while True:
 
     message, address = byte_address_pair[0], byte_address_pair[1]
 
-    print("{}: {}".format(address,message))
+    print("START\nReceived from {}: {}".format(address,message))
 
-    message = message.decode().split(",")
+    message = MARSHALLING.unmarshall(message).split(",")
+
     if message[0] == "query_flight":
-        encoded_server_message = str.encode(str(HELPER_FXNS.function_1(query_flight(message[1], message[2]), message[1], message[2])))
+        encoded_server_message = MARSHALLING.marshall(query_flight(message[1], message[2]))
     elif message[0] == "query_flight_details":
-        encoded_server_message = str.encode(str(HELPER_FXNS.function_2(query_flight_details(int(message[1])),message[1])))
+        encoded_server_message = MARSHALLING.marshall(query_flight_details(message[1]))
     elif message[0] == "reserve_seats":
-        encoded_server_message = str.encode(str(reserve_seats(int(message[1]), int(message[2]))))
+        encoded_server_message = MARSHALLING.marshall(reserve_seats(message[1], message[2]))
     elif message[0] == "add_delay":
-        encoded_server_message = str.encode(str(add_delay(int(message[1]), int(message[2]))))
+        encoded_server_message = MARSHALLING.marshall(add_delay(message[1], message[2]))
     elif message[0] == "query_flight_from_source":
-        encoded_server_message = str.encode(str(query_flight_from_source(message[1])))
+        encoded_server_message = MARSHALLING.marshall(query_flight_from_source(message[1]))
     elif message[0] == "monitor_interval":
-        encoded_server_message = str.encode(str(monitor_interval(message[1], message[2])))
+        encoded_server_message = MARSHALLING.marshall(monitor_interval(message[1], message[2]))
     else:
-        encoded_server_message = str.encode("ERROR: Invalid request")
+        encoded_server_message = MARSHALLING.marshall("ERROR: Invalid request")
 
     #sending a reply to the client
+    print("Sending to {}: {}\nEND\n".format(address, encoded_server_message))
     UDP_server_socket.sendto(encoded_server_message, address)
