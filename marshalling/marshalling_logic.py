@@ -1,4 +1,5 @@
 import uuid
+import sys
 
 #MARSHALLING and UNMARSHALLING
 
@@ -49,23 +50,23 @@ def marshall(input, request_id = None):
     else:
         request_id = str(uuid.uuid4())
         input += "," + request_id
-    print("Marshalling: ", input)
+    print("INFO: Marshalling: ", input)
     encoded = b''
     for c in input:
         encoded += bytes(mapping[c], 'utf-8')
-    print("Marshalling complete")
+    print("INFO: Marshalling complete")
     return encoded, request_id
 
 #Function to decode
 def unmarshall(bytes_string):
-    print("Unmarshalling...")
+    print("INFO: Unmarshalling...")
     string = str(bytes_string, 'utf-8')
     decoded = ''
     for i in range(0, len(string), 7):
         term = string[i:i+7]
         idx = list(mapping.values()).index(term)
         decoded += list(mapping.keys())[idx]
-    print("Unmarshalled: ", decoded)
+    print("INFO: Unmarshalled: ", decoded)
     return decoded
 
 
