@@ -6,6 +6,10 @@ import sys
 from helper_fxns import acknowledge_request
 import marshalling.marshalling_logic as MARSHALLING
 
+#Opening Page
+
+print("----------Welcome to the Flight Information System!----------")
+
 UDP_IP_ADDRESS = "127.0.0.1"
 UDP_PORT_NUM = 6789
 
@@ -16,13 +20,13 @@ encoded_client_message, request_id = MARSHALLING.marshall(sys.argv[1])
 #Create a UDP socket at a client side
 UDP_client_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
+
 if sys.argv[1].split(",")[0] != "monitor_interval":
     UDP_client_socket.settimeout(TIMEOUT_SECONDS)
 
 while True:
     try:
         #Send to server using created UDP socket
-        UDP_client_socket.sendto(encoded_client_message, (UDP_IP_ADDRESS, UDP_PORT_NUM))
         UDP_client_socket.sendto(encoded_client_message, (UDP_IP_ADDRESS, UDP_PORT_NUM))
         
         #Listening from Server

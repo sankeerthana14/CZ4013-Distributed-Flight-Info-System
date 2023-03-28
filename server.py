@@ -8,6 +8,10 @@ import marshalling.marshalling_logic as MARSHALLING
 from helper_fxns import acknowledge_request
 import threading
 from datetime import datetime, timedelta
+import sys
+
+#FLAG
+FILTER_DUPLICATES = sys.argv[1]
 
 #initialising the IP address, port number and buffer size
 UDP_IP_ADDRESS = "127.0.0.1"
@@ -150,11 +154,12 @@ while True:
     unique_code = message[-1]
 
     #checking for duplicate request
-    if unique_code not in processed_requests:
-        processed_requests.add(unique_code)
-    else:
-        print(f"LOG: Duplicated Request {unique_code}")
-        continue
+    if FILTER_DUPLICATES == "at-most-once":
+        if unique_code not in processed_requests:
+            processed_requests.add(unique_code)
+        else:
+            print(f"LOG: Duplicated Request {unique_code}")
+            continue
 
     if message[0] == "query_flight":
         encoded_server_message, request_id = MARSHALLING.marshall(query_flight(message[1], message[2]))
