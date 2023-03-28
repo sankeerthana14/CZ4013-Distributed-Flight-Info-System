@@ -80,19 +80,21 @@ def monitor_interval(interval, flight_id):
         nonlocal interval
         nonlocal org_seats
 
+        old_address = address
+
         while interval:
             # Displaying the time
             mins, secs = divmod(interval, 1)
             current_seats = FLIGHTS.flights[flight_id]['seats_available']
 
             # When there is a change in the seats
-            print("Checking for change in seat availability...")
+            print(f"{old_address} checking for change in seat availability...")
             if current_seats != org_seats:
                 print("SEATS CHANGED!")
                 text = f"INFO: Change in Seat Availability from {org_seats} to {current_seats}!"
-                text = str.encode(text)
-                print("Notifying client: ", address)
-                UDP_server_socket.sendto(text, address)
+                text, request_id = MARSHALLING.marshall(text)
+                print("Notifying client: ", old_address)
+                UDP_server_socket.sendto(text, old_address)
                 org_seats = current_seats
             time.sleep(5)
             interval -= 1
@@ -103,6 +105,7 @@ def monitor_interval(interval, flight_id):
     print("INFO: Starting thread...")
     thread = threading.Thread(target=thread_func)
     thread.start()
+
 
 
 #Create a datagram socket
