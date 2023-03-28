@@ -96,7 +96,7 @@ def monitor_interval(interval, flight_id):
                 print("Notifying client: ", old_address)
                 UDP_server_socket.sendto(text, old_address)
                 org_seats = current_seats
-            time.sleep(5)
+            time.sleep(1)
             interval -= 1
 
         print(f"INFO: Final Seat Availability: {current_seats}")
@@ -158,7 +158,8 @@ while True:
     elif message[0] == "query_flight_from_source":
         encoded_server_message, request_id = MARSHALLING.marshall(query_flight_from_source(message[1]))
     elif message[0] == "monitor_interval":
-        encoded_server_message, request_id = MARSHALLING.marshall(monitor_interval(message[1], message[2]))
+        monitor_interval(message[1], message[2])
+        encoded_server_message, request_id = MARSHALLING.marshall("Monitoring started")
     else:
         encoded_server_message, request_id = MARSHALLING.marshall("ERROR: Invalid request")
 

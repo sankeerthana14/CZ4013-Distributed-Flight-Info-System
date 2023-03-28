@@ -36,7 +36,6 @@ while True:
             message_from_server = UDP_client_socket.recvfrom(1024)
             message, address = message_from_server[0], message_from_server[1]
             response_message = MARSHALLING.unmarshall(message)
-            print(f"Message from Server:\n{response_message}")
             
             # if request is monitor_interval, then keep listening for changes
             if sys.argv[1].split(",")[0] == "monitor_interval":
@@ -44,7 +43,6 @@ while True:
                     message_from_server = UDP_client_socket.recvfrom(1024)
                     message, address = message_from_server[0], message_from_server[1]
                     response_message = MARSHALLING.unmarshall(message)
-                    print(f"Message from Server:\n{response_message}")
             else:
                 break
 
