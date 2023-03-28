@@ -61,7 +61,6 @@ def add_delay(flight_id, delay):
         dt_time = datetime.strptime(str_time, '%H:%M')
         delayed_time = (dt_time + timedelta(hours=delay)).strftime('%H:%M')
         list_time = str(delayed_time).split(":")
-        print("lsit_time", list_time)
 
         FLIGHTS.flights[flight_id]['departure_time']['hour'] = list_time[0]
         FLIGHTS.flights[flight_id]['departure_time']['minute'] = list_time[-1]
