@@ -116,14 +116,18 @@ UDP_server_socket.bind((UDP_IP_ADDRESS, UDP_PORT_NUM))
 
 print("INFO: UDP Server up and listening...")
 
+#Dictionary to keep track of reuests
+processed_requests = set()
+
 #Listen for incoming datagrams
 while True:
     byte_address_pair = UDP_server_socket.recvfrom(1024)
-    message, address = byte_address_pair[0], byte_address_pair[1]
+    message, address = byte_address_pair[0], byte_address_pair[1]  #message is in bytes
     
     print("START\nReceived message from {}".format(address))
 
-    message = MARSHALLING.unmarshall(message)
+    message = MARSHALLING.unmarshall(message) #unmarshall it to receive string
+
 
     # send acknowledgement to client
     ack = acknowledge_request(message)
@@ -131,6 +135,17 @@ while True:
     print("Sent acknowledgement to client {}".format(address))
 
     message = message.split(",")
+
+    print(f"MESSAGE: {message}, ADDRESS: {address}")
+
+    unique_code = message[-1]
+    
+    #checking for duplicate request
+    if unique_code not in processed_requests:
+        processed_requests.add(unique_code)
+    else:
+        print(f"LOG: Duplicated Request {unique_code}")
+        continue
 
     if message[0] == "query_flight":
         encoded_server_message, request_id = MARSHALLING.marshall(query_flight(message[1], message[2]))
