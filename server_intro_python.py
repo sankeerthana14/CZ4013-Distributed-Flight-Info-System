@@ -7,6 +7,7 @@ import time
 import marshalling.marshalling_logic as MARSHALLING
 from helper_fxns import acknowledge_request
 import threading
+from datetime import datetime, timedelta
 
 #initialising the IP address, port number and buffer size
 UDP_IP_ADDRESS = "127.0.0.1"
@@ -50,11 +51,19 @@ def reserve_seats(flight_id, seats):
 def add_delay(flight_id, delay):
     flight_id = int(flight_id)
     delay = int(delay)
-    print(f"INFO: Adding {delay} hours delay to flight {flight_id}...")
+    print(f"INFO: Adding {delay} hours delay to flight {flight_id}.")
     if flight_id in FLIGHTS.flights:
-        FLIGHTS.flights[flight_id]["departure_time"]["hour"] += delay
-        print(f"INFO: Flight {flight_id} delayed by {delay} hours")
-        return "Flight delayed"
+        str_time = f"{FLIGHTS.flights[flight_id]['departure_time']['hour']}:{FLIGHTS.flights[flight_id]['departure_time']['minute']}"
+        dt_time = datetime.strptime(str_time, '%H:%M')
+        delayed_time = (dt_time + timedelta(hours=delay)).strftime('%H:%M')
+        list_time = str(delayed_time).split(":")
+        print("lsit_time", list_time)
+
+        FLIGHTS.flights[flight_id]['departure_time']['hour'] = list_time[0]
+        FLIGHTS.flights[flight_id]['departure_time']['minute'] = list_time[-1]
+
+        text = f"Flight {flight_id} delayed by {delay} hours, New Departure Time: {delayed_time}"
+        return text
     else:
         return "ERROR: Flight does not exist"
     
@@ -139,7 +148,7 @@ while True:
     print(f"MESSAGE: {message}, ADDRESS: {address}")
 
     unique_code = message[-1]
-    
+
     #checking for duplicate request
     if unique_code not in processed_requests:
         processed_requests.add(unique_code)
