@@ -23,6 +23,7 @@ while True:
     try:
         #Send to server using created UDP socket
         UDP_client_socket.sendto(encoded_client_message, (UDP_IP_ADDRESS, UDP_PORT_NUM))
+        UDP_client_socket.sendto(encoded_client_message, (UDP_IP_ADDRESS, UDP_PORT_NUM))
         
         #Listening from Server
         print("INFO: Receiving message from server...")

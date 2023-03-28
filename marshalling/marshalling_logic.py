@@ -36,12 +36,6 @@ def create_mapping():
 
 create_mapping()
 
-"""
-»» Storing the mapping in a text file:
-with open('/Users/sankeerthana/Documents/NTU/YEAR_4/SEM_2/CZ4013/CZ4013-Distributed-Flight-Info-System/marshalling/mapping.txt', 'w') as f:
-     f.writelines(str(mapping))
-"""    
-
 #Function to encode
 def marshall(input, request_id = None):
     input = str(input)
