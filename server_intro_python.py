@@ -6,6 +6,7 @@ import flights_db as FLIGHTS
 import time
 import marshalling.marshalling_logic as MARSHALLING
 from helper_fxns import acknowledge_request
+import threading
 
 #initialising the IP address, port number and buffer size
 UDP_IP_ADDRESS = "127.0.0.1"
@@ -74,20 +75,34 @@ def monitor_interval(interval, flight_id):
 
     org_seats = FLIGHTS.flights[flight_id]['seats_available']
 
-    while interval:
-        #Displaying the time
-        mins, secs = divmod(interval, 1)
-        current_seats = FLIGHTS.flights[flight_id]['seats_available']
+    # Define a thread function to run the loop
+    def thread_func():
+        nonlocal interval
+        nonlocal org_seats
 
-        #when there is a change in the seats
-        if (current_seats != org_seats):
-            text = f"INFO: Change in Seat Availability from {org_seats} to {current_seats}!"
-            text = str.encode(text)
-            UDP_server_socket.sendto(text, address)
-        time.sleep(60)
-        interval -= 1
+        while interval:
+            # Displaying the time
+            mins, secs = divmod(interval, 1)
+            current_seats = FLIGHTS.flights[flight_id]['seats_available']
 
-    return f"INFO: Final Seat Availability: {current_seats}"
+            # When there is a change in the seats
+            print("Checking for change in seat availability...")
+            if current_seats != org_seats:
+                print("SEATS CHANGED!")
+                text = f"INFO: Change in Seat Availability from {org_seats} to {current_seats}!"
+                text = str.encode(text)
+                print("Notifying client: ", address)
+                UDP_server_socket.sendto(text, address)
+                org_seats = current_seats
+            time.sleep(5)
+            interval -= 1
+
+        print(f"INFO: Final Seat Availability: {current_seats}")
+
+    # Start a new thread to run the loop
+    print("INFO: Starting thread...")
+    thread = threading.Thread(target=thread_func)
+    thread.start()
 
 
 #Create a datagram socket
