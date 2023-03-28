@@ -31,6 +31,10 @@ while True:
 
         if decoded_message == f"ACK,{request_id}":
             print(f"Message from Server:\n{decoded_message}")
+            message_from_server = UDP_client_socket.recvfrom(1024)
+            message, address = message_from_server[0], message_from_server[1]
+            response_message = MARSHALLING.unmarshall(message)
+            print(f"Message from Server:\n{response_message}")
             break
 
         # send acknowledgement to server

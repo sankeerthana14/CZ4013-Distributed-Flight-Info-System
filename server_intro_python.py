@@ -68,6 +68,7 @@ def query_flight_from_source(source):
 
 #track the seat availability
 def monitor_interval(interval, flight_id):
+    print(f"INFO: Monitoring flight {flight_id} for {interval} minutes...")
     interval = int(interval)
     flight_id = int(flight_id)
 
