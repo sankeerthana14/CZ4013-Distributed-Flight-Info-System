@@ -1,12 +1,7 @@
-#CLIENT
-
-#Import
 import socket
 import sys
 from helper_fxns import acknowledge_request
 import marshalling.marshalling_logic as MARSHALLING
-
-#Opening Page
 
 print("----------Welcome to the Flight Information System!----------")
 
@@ -36,25 +31,28 @@ while True:
 
         decoded_message = MARSHALLING.unmarshall(message)
 
+        # If message received from server is ack
         if decoded_message == f"ACK,{request_id}":
             print(f"Message from Server:\n{decoded_message}")
             message_from_server = UDP_client_socket.recvfrom(1024)
             message, address = message_from_server[0], message_from_server[1]
             response_message = MARSHALLING.unmarshall(message)
             
-            # if request is monitor_interval, then keep listening for changes
+            # if ack is from monitor_interval, then keep listening for updates
             if sys.argv[1].split(",")[0] == "monitor_interval":
                 while True:
                     message_from_server = UDP_client_socket.recvfrom(1024)
                     message, address = message_from_server[0], message_from_server[1]
                     response_message = MARSHALLING.unmarshall(message)
+            # if ack is from anything else, then break
             else:
                 break
 
-    
+        # If message received from server, reply with ack
         ack = acknowledge_request(decoded_message)
         UDP_client_socket.sendto(ack, address)
         print("Sent acknowledgement to server {}".format(address))
+
     except socket.timeout:
-        # At least once semantics
+        # At least once semantics by resending message if timeout reached
         print("INFO: Timeout exceeded. Resending message...")
