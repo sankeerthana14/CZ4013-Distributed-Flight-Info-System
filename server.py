@@ -51,7 +51,7 @@ def reserve_seats(flight_id, seats):
     else:
         return "ERROR: Flight does not exist"
     
-#announcing delay of departure of flight
+# add a delay to flight departure timing
 def add_delay(flight_id, delay):
     flight_id = int(flight_id)
     delay = int(delay)
@@ -70,7 +70,7 @@ def add_delay(flight_id, delay):
     else:
         return "ERROR: Flight does not exist"
     
-
+# Get all flight ids from a single source airport
 def query_flight_from_source(source):
     print(f"INFO: Querying flights from {source}...")
     flight_ids = []
@@ -79,7 +79,7 @@ def query_flight_from_source(source):
             flight_ids.append(flight)
     return flight_ids
 
-#track the seat availability
+# Track the seat availability and notify the client when there is a change
 def monitor_interval(interval, flight_id):
     print(f"INFO: Monitoring flight {flight_id} for {interval} minutes...")
     interval = int(interval)
@@ -87,7 +87,7 @@ def monitor_interval(interval, flight_id):
 
     org_seats = FLIGHTS.flights[flight_id]['seats_available']
 
-    # Define a thread function to run the loop
+    # Define a thread function to run the loop of checking for seat availability
     def thread_func():
         nonlocal interval
         nonlocal org_seats
@@ -118,8 +118,6 @@ def monitor_interval(interval, flight_id):
     thread = threading.Thread(target=thread_func)
     thread.start()
 
-
-
 #Create a datagram socket
 UDP_server_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
@@ -141,7 +139,7 @@ while True:
     message = MARSHALLING.unmarshall(message) #unmarshall it to receive string
 
 
-    # send acknowledgement to client
+    # send acknowledgement to client whenever a request is received
     ack = acknowledge_request(message)
     UDP_server_socket.sendto(ack, address)
     print("Sent acknowledgement to client {}".format(address))
