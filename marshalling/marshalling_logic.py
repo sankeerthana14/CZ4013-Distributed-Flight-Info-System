@@ -6,10 +6,8 @@ import sys
 """
 Going with Binary - all in all there are 95 characters to encode, including whitespace.
 
-Assuming that all the data is transferred as strings.
-Every binary number will be of 7 digits as the closest numbe rot 94 is 128 = 2^7
-
-useful: https://www.w3resource.com/python/python-bytes.php
+All the data to be transmitted is first converted to strings and then converted to bytes.
+Every binary number will be of 7 digits as the closest number to 94 is 128 = 2^7
 
 """
 #Characters to be mapped
