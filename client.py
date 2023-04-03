@@ -6,7 +6,7 @@ import marshalling.marshalling_logic as MARSHALLING
 print("----------Welcome to the Flight Information System!----------")
 
 #Instatiating important values
-UDP_IP_ADDRESS = "127.0.0.1"
+UDP_IP_ADDRESS = "172.20.10.3"
 UDP_PORT_NUM = 6789
 
 TIMEOUT_SECONDS = 5
